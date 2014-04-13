@@ -8,7 +8,7 @@ Features:
   * Cross-platform: Windows, Mac (Intel, PPC), Gnu/Linux, Solaris (Intel). 32- and 64-bit architectures.
   * GUI
   * Shows whether ports are busy (optional)
-  * Function to show the last port(s) you connected to the machine. Useful if there are a lot of ports already installed. (Bluetooth, etc), especially under Windows.
+  * Function which shows the last port(s) you connected to the machine. Useful if there are a lot of ports already installed. (Bluetooth, etc), especially under Windows.
   
 Requirements:
 
@@ -19,4 +19,4 @@ Requirements:
 
 Credits:
 
-Thanks to Alexey Sokolov who wrote the jSSC library which ShowAllPorts uses.
+Thanks to Alexey Sokolov who wrote the jSSC library which ShowAllPorts uses (https://github.com/scream3r/java-simple-serial-connector).
