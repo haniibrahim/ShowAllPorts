@@ -45,7 +45,7 @@
                           </Group>
                           <Component id="lb_subtitle" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="40" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="31" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -116,7 +116,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lb_copyright">
       <Properties>
-        <Property name="text" type="java.lang.String" value=" &#xa9; 2013 Freeware by Hani Ibrahim"/>
+        <Property name="text" type="java.lang.String" value=" &#xa9; 2013 by Hani Ibrahim &#xb7; Apache License 2.0"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lb_email">
