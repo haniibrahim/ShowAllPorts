@@ -260,25 +260,28 @@ public class ShowAllPorts extends javax.swing.JFrame {
      */
     private void printPorts() {
 
+        // Disable all neccesary items while searching for ports 
+        textarea.setText("Searching ports ...");
+        btn_clear.setEnabled(false);
+        btn_refresh.setEnabled(false);
+        btn_info.setEnabled(false);
+        cb_checkports.setEnabled(false);
+        btn_newports.setEnabled(false);
+
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
         new Thread(new Runnable() {
+            @Override
             public void run() {
 
-                textarea.setText("Searching ports ...");
-                btn_clear.setEnabled(false);
-                btn_refresh.setEnabled(false);
-                btn_info.setEnabled(false);
-                cb_checkports.setEnabled(false);
-                btn_newports.setEnabled(false);
+                // Look for available ports
+                portNames = SerialPortList.getPortNames();
+                portLength = portNames.length;
 
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-                SwingUtilities.invokeLater(
+                SwingUtilities.invokeLater( // Write to GUI
                         new Runnable() {
+                            @Override
                             public void run() {
-
-                                portNames = SerialPortList.getPortNames();
-                                portLength = portNames.length;
-
                                 if (portLength == 0) {
                                     // Ausgabe GUI
                                     textarea.setText("");
