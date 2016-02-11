@@ -70,6 +70,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setPreferredSize(new java.awt.Dimension(500, 300));
 
+        toolbar.setFloatable(false);
         toolbar.setRollover(true);
 
         btn_clear.setText("  Clear  ");

@@ -10,7 +10,6 @@ import com.apple.eawt.QuitHandler;
 import com.apple.eawt.QuitResponse;
 import javax.swing.ImageIcon;
 
-
 /**
  *
  * @author Hani Ibrahim
@@ -34,7 +33,7 @@ class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHa
             System.err.println("setupMacOSXApplicationListener failed: "
                     + e.getMessage());
         }
-        
+
         // Set dock icon
         application.setDockIconImage(new ImageIcon(getClass().getResource("interface.png")).getImage());
 
