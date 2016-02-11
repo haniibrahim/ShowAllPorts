@@ -27,10 +27,10 @@ public class InfoDialog extends javax.swing.JDialog {
             Logger.getLogger(InfoDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
         initComponents();
-
+        
         // Set OK-Button to default
         this.getRootPane().setDefaultButton(btn_ok);
-
+        
         // Set version in Infobox
         lb_version.setText("1.1");
     }
@@ -161,14 +161,10 @@ public class InfoDialog extends javax.swing.JDialog {
         if (Desktop.isDesktopSupported()) {
             try {
                 Desktop.getDesktop().browse(uri);
-            } catch (IOException e) {
-                System.err.println(e.toString());
-            }
-        } else {
-            System.err.println("ERROR: 'Desktop.isDesktopSupported()' is 'FALSE'");
-        }
+            } catch (IOException e) { System.err.println(e.toString()); }
+        } else { System.err.println("ERROR: 'Desktop.isDesktopSupported()' is 'FALSE'"); }
     }
-
+    
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
 //        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
