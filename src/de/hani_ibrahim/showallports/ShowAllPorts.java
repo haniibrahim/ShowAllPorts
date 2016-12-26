@@ -392,8 +392,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
         // Look and Feel
         // Versuche zuerst GTK-L&F, dann System-L&F
         try {
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e1) {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -405,17 +405,16 @@ public class ShowAllPorts extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-        ShowAllPorts prg = new ShowAllPorts();
-        prg.setVisible(true);
-        if (getOS().equals("mac")) {
-            MacImpl macImpl = new MacImpl();
-        }
-
-//            }
-//        });
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ShowAllPorts prg = new ShowAllPorts();
+                prg.setVisible(true);
+                if (getOS().equals("mac")) {
+                    MacImpl macImpl = new MacImpl();
+                }
+            }
+        });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_clear;
