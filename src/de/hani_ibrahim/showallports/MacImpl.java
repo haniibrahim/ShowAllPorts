@@ -22,6 +22,7 @@ class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHa
         handleOS();
     }
 
+    @Override
     public void handleOS() {
 
         try {
@@ -39,6 +40,7 @@ class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHa
 
     }
 
+    @Override
     public void handleAbout(AboutEvent arg0) {
         InfoDialog info = new InfoDialog(ShowAllPorts.getFrames()[0], true);
 //        info.setLocationRelativeTo(null);
@@ -48,11 +50,13 @@ class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHa
     }
 
     // not used yet
+    @Override
     public void handlePreferences(PreferencesEvent arg0) {
         // new OptionsDialog(); 
         //System.out.println("handlePreferences()"); 
     }
 
+    @Override
     public void handleQuitRequestWith(QuitEvent arg0, QuitResponse arg1) {
         System.exit(0);
     }

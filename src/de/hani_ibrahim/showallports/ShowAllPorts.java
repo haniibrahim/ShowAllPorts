@@ -1,30 +1,31 @@
 package de.hani_ibrahim.showallports;
 
+import com.fazecast.jSerialComm.*;
 import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
-import jssc.SerialPort;
-import jssc.SerialPortException;
-import jssc.SerialPortList;
 
 /**
  * ShowAllPorts: Shows all serial (RS-232) ports\navailable on this machine
  *
  * @author Hani Andreas Ibrahim
- * @version 1.0.1
+ * @version 2.0
  *
  */
 public class ShowAllPorts extends javax.swing.JFrame {
 
-    String[] portNames;
-    int portLength;
-    boolean checkPorts;
-    String newPort = "";
-    ImageIcon icon;
+    private boolean checkPorts;
+    private String newPort = "";
+    private ImageIcon icon;
+    private static int numOfPorts;
 
     /**
      * Creates new form
@@ -52,7 +53,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        toolbar = new javax.swing.JToolBar();
+        tb_toolbar = new javax.swing.JToolBar();
         btn_clear = new javax.swing.JButton();
         btn_refresh = new javax.swing.JButton();
         sep_1 = new javax.swing.JToolBar.Separator();
@@ -70,8 +71,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setPreferredSize(new java.awt.Dimension(500, 300));
 
-        toolbar.setFloatable(false);
-        toolbar.setRollover(true);
+        tb_toolbar.setFloatable(false);
+        tb_toolbar.setRollover(true);
 
         btn_clear.setText("  Clear  ");
         btn_clear.setToolTipText("Clear Screen");
@@ -83,7 +84,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
                 btn_clearActionPerformed(evt);
             }
         });
-        toolbar.add(btn_clear);
+        tb_toolbar.add(btn_clear);
 
         btn_refresh.setText("Refresh");
         btn_refresh.setToolTipText("Rescan Ports");
@@ -95,8 +96,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
                 btn_refreshActionPerformed(evt);
             }
         });
-        toolbar.add(btn_refresh);
-        toolbar.add(sep_1);
+        tb_toolbar.add(btn_refresh);
+        tb_toolbar.add(sep_1);
 
         btn_newports.setText("New Ports");
         btn_newports.setToolTipText("Find new serial ports");
@@ -108,8 +109,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
                 btn_newportsActionPerformed(evt);
             }
         });
-        toolbar.add(btn_newports);
-        toolbar.add(sep_2);
+        tb_toolbar.add(btn_newports);
+        tb_toolbar.add(sep_2);
 
         cb_checkports.setFont(cb_checkports.getFont());
         cb_checkports.setText("Check ports");
@@ -121,8 +122,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
                 cb_checkportsActionPerformed(evt);
             }
         });
-        toolbar.add(cb_checkports);
-        toolbar.add(sep_3);
+        tb_toolbar.add(cb_checkports);
+        tb_toolbar.add(sep_3);
 
         btn_info.setText("  Info  ");
         btn_info.setFocusable(false);
@@ -133,9 +134,9 @@ public class ShowAllPorts extends javax.swing.JFrame {
                 btn_infoActionPerformed(evt);
             }
         });
-        toolbar.add(btn_info);
+        tb_toolbar.add(btn_info);
 
-        getContentPane().add(toolbar, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(tb_toolbar, java.awt.BorderLayout.PAGE_START);
 
         textarea.setEditable(false);
         textarea.setColumns(20);
@@ -157,106 +158,159 @@ public class ShowAllPorts extends javax.swing.JFrame {
      *
      * @return newPorts String of all new serial ports plugged-in (E.g: COM5)
      */
-    private String newPorts() {
-
-        String[] oldPortNames;
-        String[] newPortNames;
-        int oldPortLength;
-        int newPortLength;
-        int confirmResult;
-
-        icon = new ImageIcon(ShowAllPorts.class.getResource("interface.png"));
-
-        confirmResult = JOptionPane.showOptionDialog(this,
-                "If USB-to-Serial adapters are plugged-in,\npull them out now and press OK",
-                "Pull out USB-to-Serial adapter",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                icon, null, null);
-        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
-            return newPort = "Procedure cancelled";
-        }
-
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        oldPortNames = SerialPortList.getPortNames();
-        oldPortLength = oldPortNames.length;
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-        confirmResult = JOptionPane.showOptionDialog(this,
-                "Plug in USB-to-RS232 adapter(s) and\npress OK to proceed",
-                "Plug-in USB-to-Serial adapter",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                icon, null, null);
-        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
-            return newPort = "Procedure cancelled";
-        }
-
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        newPortNames = SerialPortList.getPortNames();
-        newPortLength = newPortNames.length;
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-        newPort = "";
-
-        if (oldPortLength >= newPortLength) {
-            newPort = "No new port detected";
-        } else {
-            /* Wrong results */
-//            for (int i = 0; i < oldPortLength; i++) {
-//                for (int j = 0; j < newPortLength; j++) {
-//                    if (!oldPortNames[i].equals(newPortNames[j])) {
-//                        newPort += newPortNames[j] + "\n";
-//                    } else {
-//                        continue;
-//                    }
+//    private String newPorts() {
+//
+//        SerialPort[] oldPortNames;
+//        SerialPort[] newPortNames;
+//        int oldPortLength;
+//        int newPortLength;
+//        int confirmResult;
+//
+//        icon = new ImageIcon(ShowAllPorts.class.getResource("interface.png"));
+//
+//        confirmResult = JOptionPane.showOptionDialog(this,
+//                "If USB-to-Serial adapters are plugged-in,\npull them out now and press OK",
+//                "Pull out USB-to-Serial adapter",
+//                JOptionPane.OK_CANCEL_OPTION,
+//                JOptionPane.INFORMATION_MESSAGE,
+//                icon, null, null);
+//        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
+//            return newPort = "Procedure cancelled";
+//        }
+//
+//        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//        oldPortNames = SerialPort.getCommPorts();
+//        oldPortLength = oldPortNames.length;
+//        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//
+//        confirmResult = JOptionPane.showOptionDialog(this,
+//                "Plug in USB-to-RS232 adapter(s) and\npress OK to proceed",
+//                "Plug-in USB-to-Serial adapter",
+//                JOptionPane.OK_CANCEL_OPTION,
+//                JOptionPane.INFORMATION_MESSAGE,
+//                icon, null, null);
+//        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
+//            return newPort = "Procedure cancelled";
+//        }
+//
+//        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//        newPortNames = SerialPort.getCommPorts();
+//        newPortLength = newPortNames.length;
+//        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//
+//        newPort = "";
+//
+//        if (oldPortLength >= newPortLength) {
+//            newPort = "No new port detected";
+//        } else {
+//            /* Wrong results */
+////            for (int i = 0; i < oldPortLength; i++) {
+////                for (int j = 0; j < newPortLength; j++) {
+////                    if (!oldPortNames[i].equals(newPortNames[j])) {
+////                        newPort += newPortNames[j] + "\n";
+////                    } else {
+////                        continue;
+////                    }
+////                }
+////            }
+//            for (int i = 0; i < newPortLength; i++) {
+//                if (!Arrays.asList(oldPortNames).contains(newPortNames[i])) {
+//                    newPort += newPortNames[i].getSystemPortName() + "\n";
+//                } else {
+//                    continue;
 //                }
 //            }
-            for (int i = 0; i < newPortLength; i++) {
-                if (!Arrays.asList(oldPortNames).contains(newPortNames[i])) {
-                    newPort += newPortNames[i] + "\n";
-                } else {
-                    continue;
-                }
-            }
-        }
-        System.out.println(newPort);
-        return newPort;
-    }
-
+//        }
+//        System.out.println(newPort);
+//        return newPort;
+//    }
     /**
-     * Returns list of serial ports and check if they are busy or not when
-     * variable checkPorts == TRUE
+     * Get the serial ports on the machine as an SerialPort array
      *
-     * @return portList String of serialPorts delimited with linefeed (\n).
-     * OPTIONAL: status of ports if checkPorts == TRUE.
+     * @return
      */
-    private String getPorts() {
-
-        String portList = "";
-        SerialPort port;
-        String portStatus = "";
-
-        for (int i = 0; i < portLength; i++) {
-            port = new SerialPort(portNames[i]);
-            if (checkPorts) {
-                try {
-                    port.openPort();
-                    port.closePort();
-                    portStatus = portNames[i] /* + " - Port available" */;
-                } catch (SerialPortException ex) {
-                    portStatus = portNames[i] + " - " + ex.getExceptionType();
-                }
-                portList += portStatus + "\n";
-            } else {
-                portList += portNames[i] + "\n";
-            }
-        }
-        return portList;
+    private static SerialPort[] portList() {
+        SerialPort[] pL = SerialPort.getCommPorts();
+        numOfPorts = pL.length; // Global static variable
+        return pL;
     }
 
     /**
-     * Output of serial ports (portList) in GUI and console
+     * Returns an string array of system port names, e.g. COM1
+     *
+     * @return
+     */
+    private static String[] getSysPortNames() {
+        String[] sysPortNames = new String[numOfPorts];
+        for (int i = 0; i < numOfPorts; i++) {
+            sysPortNames[i] = portList()[i].getSystemPortName();
+        }
+        return sysPortNames;
+    }
+
+    /**
+     * Returns an string array of descriptive port names, e.g. "USB-to-Serial
+     * CommPort"
+     *
+     * @return
+     */
+    private static String[] getDesPortNames() {
+        String[] desPortNames = new String[numOfPorts];
+        for (int i = 0; i < numOfPorts; i++) {
+            desPortNames[i] = portList()[i].getDescriptivePortName();
+        }
+        return desPortNames;
+    }
+
+    /**
+     * Determine whether ports are busy or not
+     *
+     * @return
+     */
+    private static Boolean[] getPortStatus() {
+        Boolean[] portStatus = new Boolean[numOfPorts];
+        for (int i = 0; i < numOfPorts; i++) {
+            if (portList()[i].openPort()) {
+                portStatus[i] = true; // Port is free
+                portList()[i].closePort();
+            } else {
+                portStatus[i] = false; // Port is busy
+                //portList()[i].closePort();
+            }
+            System.out.println("Portstatus: " + portList()[i].getSystemPortName() + " " + portStatus[i]);
+        }
+        for (int i = 0; i < numOfPorts; i++) {
+            if (portStatus[i]){
+                portList()[i].closePort();
+            }
+        }
+        return portStatus;
+    }
+
+    /**
+     * Returns a status message dependend on getPortStatus()
+     *
+     * @return
+     */
+    private static String[] getPortStatusMessages() {
+        String[] statusMessage = new String[numOfPorts];
+        Boolean[] portStatus = getPortStatus();
+        for (int i = 0; i < numOfPorts; i++) {
+            if (portStatus[i]) {
+                statusMessage[i] = " - Port available";
+            } else {
+                statusMessage[i] = " - Port busy";
+            }
+            System.out.println("Portmessage: " + i + " " + statusMessage[i]);
+            if (portList()[i].isOpen()) {
+                portList()[i].closePort();
+            }
+        }
+        return statusMessage;
+    }
+
+    /**
+     * Output of serial ports (SysPortList) in GUI and console
      */
     private void printPorts() {
 
@@ -270,44 +324,98 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-        new Thread(new Runnable() {
+        SwingWorker<String[], Void> worker = new SwingWorker<String[], Void>() {
             @Override
-            public void run() {
+            protected String[] doInBackground() {
+                portList(); // Provide numOfPorts and portList
 
-                // Look for available ports
-                portNames = SerialPortList.getPortNames();
-                portLength = portNames.length;
-
-                SwingUtilities.invokeLater( // Write to GUI
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                if (portLength == 0) {
-                                    // Ausgabe GUI
-                                    textarea.setText("");
-                                    textarea.setText("No ports found");
-                                    // Ausgabe auch auf der Console
-                                    System.out.print("No ports found");
-                                } else {
-                                    // Ausgabe GUI
-                                    textarea.setText("");
-                                    textarea.append(getPorts());
-                                    // Ausgabe auch auf der Console
-                                    System.out.print(getPorts());
-                                }
-
-                                btn_clear.setEnabled(true);
-                                btn_refresh.setEnabled(true);
-                                btn_info.setEnabled(true);
-                                cb_checkports.setEnabled(true);
-                                btn_newports.setEnabled(true);
-
-                                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                            }
-                        });
+                String[] sP = getSysPortNames();
+                String[] dP = getDesPortNames();
+                String[] ports = new String[numOfPorts];
+                if (checkPorts) {
+                    String[] pM = getPortStatusMessages();
+                    for (int i = 0; i < numOfPorts; i++) {
+                        ports[i] = sP[i] + " - " + dP[i] + pM[i];
+                    }
+                } else {
+                    for (int i = 0; i < numOfPorts; i++) {
+                        ports[i] = sP[i] + " - " + dP[i];
+                    }
+                }
+                return ports;
             }
-        }).start();
+
+            @Override
+            protected void done() {
+                try {
+                    String[] ports = get();
+                    if (ports.length == 0) {
+                        // Output GUI
+                        textarea.setText("");
+                        String noPorts = "No ports found";
+                        textarea.setText(noPorts);
+                        // Output CLI
+                        System.out.print(noPorts);
+                    } else {
+                        textarea.setText("");
+                        for (int i = 0; i < numOfPorts; i++) {
+                            textarea.append(ports[i] + System.getProperty("line.separator")); // Output GUI
+                            System.out.print(ports[i] + System.getProperty("line.separator")); // Output CLI
+                        }
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ShowAllPorts.class.getName()).log(Level.SEVERE, "GET: Interrupted", ex);
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ShowAllPorts.class.getName()).log(Level.SEVERE, "GET: Excecution", ex);
+                }
+                btn_clear.setEnabled(true);
+                btn_refresh.setEnabled(true);
+                btn_info.setEnabled(true);
+                cb_checkports.setEnabled(true);
+                btn_newports.setEnabled(true);
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        };
+        worker.execute();
     }
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                // Look for available ports
+//                String[] sysNames = getSysPortNames();
+//                String[] desNames 
+//
+//                SwingUtilities.invokeLater( // Write to GUI
+//                        new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (portLength == 0) {
+//                            // Ausgabe GUI
+//                            textarea.setText("");
+//                            textarea.setText("No ports found");
+//                            // Ausgabe auch auf der Console
+//                            System.out.print("No ports found");
+//                        } else {
+//                            // Ausgabe GUI
+//                            textarea.setText("");
+//                            textarea.setText(portNameList);
+//                            // Ausgabe auch auf der Console
+//                            System.out.print(getPorts());
+//                        }
+//
+//                        btn_clear.setEnabled(true);
+//                        btn_refresh.setEnabled(true);
+//                        btn_info.setEnabled(true);
+//                        cb_checkports.setEnabled(true);
+//                        btn_newports.setEnabled(true);
+//
+//                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//                    }
+//                });
+//            }
+//        }).start();
+//    }
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
         printPorts();
@@ -338,10 +446,10 @@ public class ShowAllPorts extends javax.swing.JFrame {
     }//GEN-LAST:event_cb_checkportsActionPerformed
 
     private void btn_newportsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_newportsActionPerformed
-        JOptionPane.showMessageDialog(this,
-                "<html><span style=\"font-size:large;\"><b>New Port(s):</b></span></html>\n\n" + newPorts() + "\n\n",
-                "New Port(s)",
-                JOptionPane.INFORMATION_MESSAGE, icon);
+//        JOptionPane.showMessageDialog(this,
+//                "<html><span style=\"font-size:large;\"><b>New Port(s):</b></span></html>\n\n" + newPorts() + "\n\n",
+//                "New Port(s)",
+//                JOptionPane.INFORMATION_MESSAGE, icon);
         printPorts();
     }//GEN-LAST:event_btn_newportsActionPerformed
 
@@ -352,10 +460,10 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
     public static String getOS() {
         String osname = System.getProperty("os.name");
-        if (osname != null && osname.toLowerCase().indexOf("mac") != -1) {
+        if (osname != null && osname.toLowerCase().contains("mac")) {
             return "mac";
         }
-        if (osname != null && osname.toLowerCase().indexOf("windows") != -1) {
+        if (osname != null && osname.toLowerCase().contains("windows")) {
             return "win";
         }
         return "noarch";
@@ -426,7 +534,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private javax.swing.JToolBar.Separator sep_1;
     private javax.swing.JToolBar.Separator sep_2;
     private javax.swing.JToolBar.Separator sep_3;
+    private javax.swing.JToolBar tb_toolbar;
     private javax.swing.JTextArea textarea;
-    private javax.swing.JToolBar toolbar;
     // End of variables declaration//GEN-END:variables
 }
