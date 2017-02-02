@@ -26,6 +26,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private String newPort = "";
     private ImageIcon icon;
     private static int numOfPorts;
+    private static SerialPort[] portList; // Port list
 
     /**
      * Creates new form
@@ -41,7 +42,16 @@ public class ShowAllPorts extends javax.swing.JFrame {
             sep_3.setVisible(false);
             btn_info.setVisible(false);
         }
+        
+        getPortList();
         printPorts();
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Code
+            }
+        }));
     }
 
     /**
@@ -229,10 +239,10 @@ public class ShowAllPorts extends javax.swing.JFrame {
      *
      * @return
      */
-    private static SerialPort[] portList() {
-        SerialPort[] pL = SerialPort.getCommPorts();
-        numOfPorts = pL.length; // Global static variable
-        return pL;
+    private static SerialPort[] getPortList() {
+        portList = SerialPort.getCommPorts();
+        numOfPorts = portList.length; // Global static variable
+        return portList;
     }
 
     /**
@@ -243,7 +253,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private static String[] getSysPortNames() {
         String[] sysPortNames = new String[numOfPorts];
         for (int i = 0; i < numOfPorts; i++) {
-            sysPortNames[i] = portList()[i].getSystemPortName();
+            sysPortNames[i] = portList[i].getSystemPortName();
         }
         return sysPortNames;
     }
@@ -257,7 +267,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private static String[] getDesPortNames() {
         String[] desPortNames = new String[numOfPorts];
         for (int i = 0; i < numOfPorts; i++) {
-            desPortNames[i] = portList()[i].getDescriptivePortName();
+            desPortNames[i] = portList[i].getDescriptivePortName();
         }
         return desPortNames;
     }
@@ -270,22 +280,31 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private static Boolean[] getPortStatus() {
         Boolean[] portStatus = new Boolean[numOfPorts];
         for (int i = 0; i < numOfPorts; i++) {
-            if (portList()[i].openPort()) {
+            if (portList[i].openPort()) {
                 portStatus[i] = true; // Port is free
-                portList()[i].closePort();
+                portList[i].closePort();
             } else {
                 portStatus[i] = false; // Port is busy
-                //portList()[i].closePort();
             }
-            System.out.println("Portstatus: " + portList()[i].getSystemPortName() + " " + portStatus[i]);
-        }
-        for (int i = 0; i < numOfPorts; i++) {
-            if (portStatus[i]){
-                portList()[i].closePort();
-            }
+            System.out.println("Portstatus: " + getPortList()[i].getSystemPortName() + " " + portStatus[i]);
         }
         return portStatus;
     }
+//    private static Boolean[] getPortStatus() {
+//        Boolean[] portStatus = new Boolean[numOfPorts];
+//        for (int i = 0; i < numOfPorts; i++) {
+//            getPortList()[i].openPort();
+//            if (getPortList()[i].isOpen()) {
+//                portStatus[i] = true; // Port is free
+//                getPortList()[i].closePort();
+//            } else {
+//                portStatus[i] = false; // Port is busy
+//                //portList()[i].closePort();
+//            }
+//            System.out.println("Portstatus: " + getPortList()[i].getSystemPortName() + " " + portStatus[i]);
+//        }
+//        return portStatus;
+//    }
 
     /**
      * Returns a status message dependend on getPortStatus()
@@ -302,9 +321,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
                 statusMessage[i] = " - Port busy";
             }
             System.out.println("Portmessage: " + i + " " + statusMessage[i]);
-            if (portList()[i].isOpen()) {
-                portList()[i].closePort();
-            }
         }
         return statusMessage;
     }
@@ -327,7 +343,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         SwingWorker<String[], Void> worker = new SwingWorker<String[], Void>() {
             @Override
             protected String[] doInBackground() {
-                portList(); // Provide numOfPorts and portList
+                getPortList(); // Provide numOfPorts and getPortList
 
                 String[] sP = getSysPortNames();
                 String[] dP = getDesPortNames();
@@ -418,6 +434,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
 //    }
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
+        getPortList();
         printPorts();
     }//GEN-LAST:event_btn_refreshActionPerformed
 
