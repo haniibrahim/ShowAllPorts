@@ -1,4 +1,4 @@
-package de.hani_ibrahim.showallports;
+package de.haniibrahim.showallports;
 
 import com.fazecast.jSerialComm.*;
 import java.awt.Cursor;
@@ -91,7 +91,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
         setTitle("ShowAllPorts");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setLocationByPlatform(true);
-        setPreferredSize(new java.awt.Dimension(500, 300));
 
         tb_toolbar.setFloatable(false);
         tb_toolbar.setRollover(true);

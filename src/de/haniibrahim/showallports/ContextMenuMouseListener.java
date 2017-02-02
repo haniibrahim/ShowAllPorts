@@ -1,4 +1,4 @@
-package de.hani_ibrahim.showallports;
+package de.haniibrahim.showallports;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;

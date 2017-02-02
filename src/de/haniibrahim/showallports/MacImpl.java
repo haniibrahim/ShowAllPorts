@@ -1,4 +1,4 @@
-package de.hani_ibrahim.showallports;
+package de.haniibrahim.showallports;
 
 import com.apple.eawt.AboutHandler;
 import com.apple.eawt.AppEvent.AboutEvent;
