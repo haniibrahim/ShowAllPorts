@@ -2,13 +2,14 @@ package de.hani_ibrahim.showallports;
 
 import com.fazecast.jSerialComm.*;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
@@ -43,13 +44,24 @@ public class ShowAllPorts extends javax.swing.JFrame {
             btn_info.setVisible(false);
         }
         
+        // Hide "New Ports" feature for now
+        btn_newports.setVisible(false);
+        sep_1.setVisible(false);
+        
         getPortList();
         printPorts();
         
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+        // Load prefs at startup and save at shutdown
+	setPrefs();
+	
+	Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                // Code
+                try{
+                storePrefs();
+                } catch (BackingStoreException ex){
+                    // do nothing
+                }
             }
         }));
     }
@@ -237,7 +249,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     /**
      * Get the serial ports on the machine as an SerialPort array
      *
-     * @return
+     * @return SerialPort-Array of the serial ports found
      */
     private static SerialPort[] getPortList() {
         portList = SerialPort.getCommPorts();
@@ -246,9 +258,9 @@ public class ShowAllPorts extends javax.swing.JFrame {
     }
 
     /**
-     * Returns an string array of system port names, e.g. COM1
+     * Returns system port names, e.g. COM1
      *
-     * @return
+     * @return String array of system port names found (e.g. COM1, /dev/ttyS1)
      */
     private static String[] getSysPortNames() {
         String[] sysPortNames = new String[numOfPorts];
@@ -259,10 +271,9 @@ public class ShowAllPorts extends javax.swing.JFrame {
     }
 
     /**
-     * Returns an string array of descriptive port names, e.g. "USB-to-Serial
-     * CommPort"
+     * Returns descriptive port names, e.g. "USB-to-Serial CommPort"
      *
-     * @return
+     * @return String array of descriptive port names 
      */
     private static String[] getDesPortNames() {
         String[] desPortNames = new String[numOfPorts];
@@ -275,7 +286,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     /**
      * Determine whether ports are busy or not
      *
-     * @return
+     * @return Boolean array 
      */
     private static Boolean[] getPortStatus() {
         Boolean[] portStatus = new Boolean[numOfPorts];
@@ -290,21 +301,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
         }
         return portStatus;
     }
-//    private static Boolean[] getPortStatus() {
-//        Boolean[] portStatus = new Boolean[numOfPorts];
-//        for (int i = 0; i < numOfPorts; i++) {
-//            getPortList()[i].openPort();
-//            if (getPortList()[i].isOpen()) {
-//                portStatus[i] = true; // Port is free
-//                getPortList()[i].closePort();
-//            } else {
-//                portStatus[i] = false; // Port is busy
-//                //portList()[i].closePort();
-//            }
-//            System.out.println("Portstatus: " + getPortList()[i].getSystemPortName() + " " + portStatus[i]);
-//        }
-//        return portStatus;
-//    }
 
     /**
      * Returns a status message dependend on getPortStatus()
@@ -395,44 +391,46 @@ public class ShowAllPorts extends javax.swing.JFrame {
         worker.execute();
     }
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                // Look for available ports
-//                String[] sysNames = getSysPortNames();
-//                String[] desNames 
-//
-//                SwingUtilities.invokeLater( // Write to GUI
-//                        new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if (portLength == 0) {
-//                            // Ausgabe GUI
-//                            textarea.setText("");
-//                            textarea.setText("No ports found");
-//                            // Ausgabe auch auf der Console
-//                            System.out.print("No ports found");
-//                        } else {
-//                            // Ausgabe GUI
-//                            textarea.setText("");
-//                            textarea.setText(portNameList);
-//                            // Ausgabe auch auf der Console
-//                            System.out.print(getPorts());
-//                        }
-//
-//                        btn_clear.setEnabled(true);
-//                        btn_refresh.setEnabled(true);
-//                        btn_info.setEnabled(true);
-//                        cb_checkports.setEnabled(true);
-//                        btn_newports.setEnabled(true);
-//
-//                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//                    }
-//                });
-//            }
-//        }).start();
-//    }
+        private void storePrefs() throws BackingStoreException {
+        // Get node
+        Preferences prefs = Preferences.userNodeForPackage(getClass());
 
+        // Save window position
+        prefs.putInt("xpos", getLocation().x);
+        prefs.putInt("ypos", getLocation().y);
+
+        // Save Window size
+        prefs.putInt("width", getSize().width);
+        prefs.putInt("height", getSize().height);
+        
+        // App settings
+        prefs.putBoolean("checkports" ,cb_checkports.isSelected());
+
+        prefs.flush(); // Made sure that all preferences are stored
+    }
+
+    private void setPrefs() {
+        // Get node
+        Preferences prefs = Preferences.userNodeForPackage(getClass());
+
+        // Calculate screen-centered windows position
+        final Dimension d = this.getToolkit().getScreenSize();
+        int win_x = (int) ((d.getWidth() - this.getWidth()) / 2);
+        int win_y = (int) ((d.getHeight() - this.getHeight()) / 2);
+
+        // Set window position
+        setLocation(prefs.getInt("xpos", win_x),
+                prefs.getInt("ypos", win_y));
+
+        // Set window size
+        setSize(prefs.getInt("width", 637),
+                prefs.getInt("height", 380));
+        
+        // App settings
+        boolean checkports = prefs.getBoolean("checkports", false);
+        cb_checkports.setSelected(checkports);
+    }
+    
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
         getPortList();
         printPorts();
