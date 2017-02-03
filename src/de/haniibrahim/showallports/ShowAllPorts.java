@@ -49,9 +49,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
         }
 
         // Hide "New Ports" feature for now
-        btn_newports.setVisible(false);
-        sep_1.setVisible(false);
-
+//        btn_newports.setVisible(false);
+//        sep_1.setVisible(false);
         // Load prefs at startup and save at shutdown
         setPrefs();
 
@@ -218,7 +217,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
                     if (ports.length == 0) {
                         // Output GUI
                         textarea.setText("");
-                        String noPorts = "No ports found";
+                        String noPorts = "No ports found\n";
                         textarea.setText(noPorts);
                         // Output CLI
                         System.out.print(noPorts);
@@ -248,16 +247,17 @@ public class ShowAllPorts extends javax.swing.JFrame {
     /**
      * Procedure to detect new serial ports plugged-in
      *
-     * @return newPorts as SerialPort[] array of all new serial ports plugged-in (e.g: COM5)
+     * @return newPorts as SerialPort[] array of all new serial ports plugged-in
+     * (e.g: COM5)
      */
     private SerialPort[] getNewPorts() {
 
-        SerialPort[] initPorts;
-        SerialPort[] allPorts;
-        SerialPort[] newPorts;
-        int oldPortLength;
-        int newPortLength;
-        int confirmResult;
+        SerialPort[] initPorts; // Array of ports before plug-in adapter
+        SerialPort[] allPorts;  // Array of ports after plug-in adapter
+        SerialPort[] newPorts = null; // Array of the pluged-in adapter(s)
+        int initPortsLen; // Length of the array of initPorts
+        int allPortsLen;  // Length of the array of allPorts
+        int confirmResult; // Result of JOptionPanels
 
         icon = new ImageIcon(ShowAllPorts.class.getResource("interface.png"));
 
@@ -276,7 +276,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         initPorts = getPortList();
-        oldPortLength = initPorts.length;
+        initPortsLen = initPorts.length;
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
         confirmResult = JOptionPane.showOptionDialog(this,
@@ -294,27 +294,19 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         allPorts = getPortList();
-        newPortLength = allPorts.length;
+        allPortsLen = allPorts.length;
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-        newPorts = null;
-
-        if (oldPortLength >= newPortLength) {
+        if (initPortsLen >= allPortsLen) {
             JOptionPane.showMessageDialog(this,
                     "No new ports found",
                     "Info", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            // Creadte a LinkedList of all NEW plugged-in ports detected
-            LinkedList<SerialPort> newPortsList = new LinkedList<SerialPort>();
-            for (int i = 0; i < newPortLength; i++) {
-                if (!Arrays.asList(initPorts).contains(allPorts[i])) {
-                    newPortsList.add(allPorts[i]);
-                }
-            }
-            // Convert LinkedList back to SerialPort array
-            newPorts = new SerialPort[newPortsList.size()];
-            for (int i = 0; i < newPorts.length; i++){
-                newPorts[i] = newPortsList.get(i);
+            // Because new ports are added at the end of the array
+            // the new ports are stored behind the initPorts in the array
+            newPorts = new SerialPort[allPortsLen - initPortsLen];
+            for (int i = initPortsLen; i < allPortsLen; i++){
+                newPorts[i-initPortsLen] = allPorts[i]; 
             }
         }
         return newPorts;
@@ -385,7 +377,16 @@ public class ShowAllPorts extends javax.swing.JFrame {
 //                "<html><span style=\"font-size:large;\"><b>New Port(s):</b></span></html>\n\n" + newPorts() + "\n\n",
 //                "New Port(s)",
 //                JOptionPane.INFORMATION_MESSAGE, icon);
+        SerialPort[] newPorts = getNewPorts();
+        String newPortsText = "";
+        for (int i = 0; i < newPorts.length; i++) {
+            newPortsText += newPorts[i].getSystemPortName() + "\n";
+        }
+        JOptionPane.showMessageDialog(this,
+                "New Ports:\n\n" + newPortsText + "\n",
+                "New detected ports", JOptionPane.INFORMATION_MESSAGE);
         printPorts();
+
     }//GEN-LAST:event_btn_newportsActionPerformed
 
     private void textareaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_textareaMouseClicked

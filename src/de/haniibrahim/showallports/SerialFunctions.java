@@ -2,7 +2,6 @@
 package de.haniibrahim.showallports;
 
 import com.fazecast.jSerialComm.SerialPort;
-import javax.swing.ImageIcon;
 
 
 final class SerialFunctions {
