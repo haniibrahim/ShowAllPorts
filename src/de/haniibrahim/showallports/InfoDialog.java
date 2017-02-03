@@ -32,7 +32,7 @@ public class InfoDialog extends javax.swing.JDialog {
         this.getRootPane().setDefaultButton(btn_ok);
         
         // Set version in Infobox
-        lb_version.setText("2.0");
+        lb_version.setText("2.0.0");
     }
 
     /**

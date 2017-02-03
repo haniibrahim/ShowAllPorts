@@ -5,11 +5,15 @@ import static de.haniibrahim.showallports.SerialFunctions.*;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
@@ -24,7 +28,8 @@ import javax.swing.UIManager;
 public class ShowAllPorts extends javax.swing.JFrame {
 
     private Preferences prefs;
-    
+    private ImageIcon icon; // for "New Ports Message boxes"
+
     private static int numOfPorts;
     private static SerialPort[] portList;
 
@@ -60,7 +65,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
                 }
             }
         }));
-        
+
         printPorts();
     }
 
@@ -167,15 +172,13 @@ public class ShowAllPorts extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
-
     /**
      * Output of serial ports (SysPortList) in GUI and console
      */
     private void printPorts() {
         portList = getPortList();
         numOfPorts = getNumOfPorts();
-        
+
         // Disable all neccesary items while searching for ports 
         textarea.setText("Searching ports ...");
         btn_clear.setEnabled(false);
@@ -188,12 +191,13 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         SwingWorker<String[], Void> worker = new SwingWorker<String[], Void>() {
             boolean checkPorts = cb_checkports.isSelected(); // Check ports?
+
             @Override
             protected String[] doInBackground() {
                 String[] sP = getSysPortNames();
                 String[] dP = getDesPortNames();
                 String[] ports = new String[numOfPorts];
-                
+
                 if (checkPorts) {
                     String[] pM = getPortStatusMessages();
                     for (int i = 0; i < numOfPorts; i++) {
@@ -239,6 +243,81 @@ public class ShowAllPorts extends javax.swing.JFrame {
             }
         };
         worker.execute();
+    }
+
+    /**
+     * Procedure to detect new serial ports plugged-in
+     *
+     * @return newPorts as SerialPort[] array of all new serial ports plugged-in (e.g: COM5)
+     */
+    private SerialPort[] getNewPorts() {
+
+        SerialPort[] initPorts;
+        SerialPort[] allPorts;
+        SerialPort[] newPorts;
+        int oldPortLength;
+        int newPortLength;
+        int confirmResult;
+
+        icon = new ImageIcon(ShowAllPorts.class.getResource("interface.png"));
+
+        confirmResult = JOptionPane.showOptionDialog(this,
+                "If USB-to-Serial adapters are plugged-in,\npull them out now and press OK",
+                "Pull out USB-to-Serial adapter",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                icon, null, null);
+        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
+            JOptionPane.showMessageDialog(this,
+                    "Process canncelled by user",
+                    "Info", JOptionPane.INFORMATION_MESSAGE);
+            return newPorts = null;
+        }
+
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        initPorts = getPortList();
+        oldPortLength = initPorts.length;
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+        confirmResult = JOptionPane.showOptionDialog(this,
+                "Plug in USB-to-RS232 adapter(s) and\npress OK to proceed",
+                "Plug-in USB-to-Serial adapter",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                icon, null, null);
+        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
+            JOptionPane.showMessageDialog(this,
+                    "Process canncelled by user",
+                    "Info", JOptionPane.INFORMATION_MESSAGE);
+            return newPorts = null;
+        }
+
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        allPorts = getPortList();
+        newPortLength = allPorts.length;
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+        newPorts = null;
+
+        if (oldPortLength >= newPortLength) {
+            JOptionPane.showMessageDialog(this,
+                    "No new ports found",
+                    "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Creadte a LinkedList of all NEW plugged-in ports detected
+            LinkedList<SerialPort> newPortsList = new LinkedList<SerialPort>();
+            for (int i = 0; i < newPortLength; i++) {
+                if (!Arrays.asList(initPorts).contains(allPorts[i])) {
+                    newPortsList.add(allPorts[i]);
+                }
+            }
+            // Convert LinkedList back to SerialPort array
+            newPorts = new SerialPort[newPortsList.size()];
+            for (int i = 0; i < newPorts.length; i++){
+                newPorts[i] = newPortsList.get(i);
+            }
+        }
+        return newPorts;
     }
 
     private void storePrefs() throws BackingStoreException {
@@ -380,6 +459,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
             }
         });
     }
+    //<editor-fold defaultstate="collapsed" desc=" GUI variables declaration">
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_clear;
     private javax.swing.JButton btn_info;
@@ -393,4 +473,5 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private javax.swing.JToolBar tb_toolbar;
     private javax.swing.JTextArea textarea;
     // End of variables declaration//GEN-END:variables
+//</editor-fold>
 }

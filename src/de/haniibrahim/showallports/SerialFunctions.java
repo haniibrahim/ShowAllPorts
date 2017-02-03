@@ -5,9 +5,8 @@ import com.fazecast.jSerialComm.SerialPort;
 import javax.swing.ImageIcon;
 
 
-class SerialFunctions {
-    
-    private ImageIcon icon; // for "New Ports Message boxes"
+final class SerialFunctions {
+
     private static SerialPort[] portList;
     private static int numOfPorts;
     
@@ -87,76 +86,4 @@ class SerialFunctions {
         }
         return statusMessage;
     }
-    
-    /**
-     * Procedure to detect new serial ports plugged-in
-     *
-     * @return newPorts String of all new serial ports plugged-in (E.g: COM5)
-     */
-//    private String newPorts() {
-//
-//        SerialPort[] oldPortNames;
-//        SerialPort[] newPortNames;
-//        int oldPortLength;
-//        int newPortLength;
-//        int confirmResult;
-//
-//        icon = new ImageIcon(ShowAllPorts.class.getResource("interface.png"));
-//
-//        confirmResult = JOptionPane.showOptionDialog(this,
-//                "If USB-to-Serial adapters are plugged-in,\npull them out now and press OK",
-//                "Pull out USB-to-Serial adapter",
-//                JOptionPane.OK_CANCEL_OPTION,
-//                JOptionPane.INFORMATION_MESSAGE,
-//                icon, null, null);
-//        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
-//            return newPort = "Procedure cancelled";
-//        }
-//
-//        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//        oldPortNames = SerialPort.getCommPorts();
-//        oldPortLength = oldPortNames.length;
-//        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//
-//        confirmResult = JOptionPane.showOptionDialog(this,
-//                "Plug in USB-to-RS232 adapter(s) and\npress OK to proceed",
-//                "Plug-in USB-to-Serial adapter",
-//                JOptionPane.OK_CANCEL_OPTION,
-//                JOptionPane.INFORMATION_MESSAGE,
-//                icon, null, null);
-//        if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
-//            return newPort = "Procedure cancelled";
-//        }
-//
-//        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//        newPortNames = SerialPort.getCommPorts();
-//        newPortLength = newPortNames.length;
-//        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//
-//        newPort = "";
-//
-//        if (oldPortLength >= newPortLength) {
-//            newPort = "No new port detected";
-//        } else {
-//            /* Wrong results */
-////            for (int i = 0; i < oldPortLength; i++) {
-////                for (int j = 0; j < newPortLength; j++) {
-////                    if (!oldPortNames[i].equals(newPortNames[j])) {
-////                        newPort += newPortNames[j] + "\n";
-////                    } else {
-////                        continue;
-////                    }
-////                }
-////            }
-//            for (int i = 0; i < newPortLength; i++) {
-//                if (!Arrays.asList(oldPortNames).contains(newPortNames[i])) {
-//                    newPort += newPortNames[i].getSystemPortName() + "\n";
-//                } else {
-//                    continue;
-//                }
-//            }
-//        }
-//        System.out.println(newPort);
-//        return newPort;
-//    }
 }
