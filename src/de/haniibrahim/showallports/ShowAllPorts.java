@@ -298,15 +298,13 @@ public class ShowAllPorts extends javax.swing.JFrame {
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
         if (initPortsLen >= allPortsLen) {
-            JOptionPane.showMessageDialog(this,
-                    "No new ports found",
-                    "Info", JOptionPane.INFORMATION_MESSAGE);
+            newPorts = null;
         } else {
             // Because new ports are added at the end of the array
             // the new ports are stored behind the initPorts in the array
             newPorts = new SerialPort[allPortsLen - initPortsLen];
-            for (int i = initPortsLen; i < allPortsLen; i++){
-                newPorts[i-initPortsLen] = allPorts[i]; 
+            for (int i = initPortsLen; i < allPortsLen; i++) {
+                newPorts[i - initPortsLen] = allPorts[i];
             }
         }
         return newPorts;
@@ -378,14 +376,21 @@ public class ShowAllPorts extends javax.swing.JFrame {
 //                "New Port(s)",
 //                JOptionPane.INFORMATION_MESSAGE, icon);
         SerialPort[] newPorts = getNewPorts();
-        String newPortsText = "";
-        for (int i = 0; i < newPorts.length; i++) {
-            newPortsText += newPorts[i].getSystemPortName() + "\n";
+        if (newPorts != null) {
+            String newPortsText = "";
+            for (int i = 0; i < newPorts.length; i++) {
+                newPortsText += newPorts[i].getSystemPortName() + "\n";
+            }
+            JOptionPane.showMessageDialog(this,
+                    "New Ports:\n\n" + newPortsText + "\n",
+                    "New detected ports", JOptionPane.INFORMATION_MESSAGE);
+            printPorts();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No ports found\n",
+                    "New detected ports", JOptionPane.INFORMATION_MESSAGE);
         }
-        JOptionPane.showMessageDialog(this,
-                "New Ports:\n\n" + newPortsText + "\n",
-                "New detected ports", JOptionPane.INFORMATION_MESSAGE);
-        printPorts();
+
 
     }//GEN-LAST:event_btn_newportsActionPerformed
 
