@@ -1,4 +1,4 @@
-package de.hani_ibrahim.showallports;
+package de.haniibrahim.showallports;
 
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -57,7 +57,7 @@ public class InfoDialog extends javax.swing.JDialog {
         setModal(true);
         setResizable(false);
 
-        lb_img.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/hani_ibrahim/showallports/interface.png"))); // NOI18N
+        lb_img.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/interface.png"))); // NOI18N
 
         btn_ok.setText("OK");
         btn_ok.addActionListener(new java.awt.event.ActionListener() {
