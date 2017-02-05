@@ -5,8 +5,6 @@ import static de.haniibrahim.showallports.SerialFunctions.*;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,9 +28,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private Preferences prefs;
     private ImageIcon icon; // for "New Ports Message boxes"
 
-    private static int numOfPorts;
-    private static SerialPort[] portList;
-
     /**
      * Creates new form
      */
@@ -48,10 +43,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
             btn_info.setVisible(false);
         }
 
-        // Hide "New Ports" feature for now
-//        btn_newports.setVisible(false);
-//        sep_1.setVisible(false);
-        // Load prefs at startup and save at shutdown
         setPrefs();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -175,8 +166,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
      * Output of serial ports (SysPortList) in GUI and console
      */
     private void printPorts() {
-        portList = getPortList();
-        numOfPorts = getNumOfPorts();
 
         // Disable all neccesary items while searching for ports 
         textarea.setText("Searching ports ...");
@@ -189,10 +178,12 @@ public class ShowAllPorts extends javax.swing.JFrame {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         SwingWorker<String[], Void> worker = new SwingWorker<String[], Void>() {
+            int numOfPorts;
             boolean checkPorts = cb_checkports.isSelected(); // Check ports?
 
             @Override
             protected String[] doInBackground() {
+                numOfPorts = getNumOfPorts();
                 String[] sP = getSysPortNames();
                 String[] dP = getDesPortNames();
                 String[] ports = new String[numOfPorts];
@@ -375,23 +366,41 @@ public class ShowAllPorts extends javax.swing.JFrame {
 //                "<html><span style=\"font-size:large;\"><b>New Port(s):</b></span></html>\n\n" + newPorts() + "\n\n",
 //                "New Port(s)",
 //                JOptionPane.INFORMATION_MESSAGE, icon);
-        SerialPort[] newPorts = getNewPorts();
-        if (newPorts != null) {
-            String newPortsText = "";
-            for (int i = 0; i < newPorts.length; i++) {
-                newPortsText += newPorts[i].getSystemPortName() + "\n";
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        new SwingWorker<SerialPort[], Void>() {
+            @Override
+            protected SerialPort[] doInBackground() throws Exception {
+                SerialPort[] newPorts = getNewPorts();
+                return newPorts;
             }
-            JOptionPane.showMessageDialog(this,
-                    "New Ports:\n\n" + newPortsText + "\n",
-                    "New detected ports", JOptionPane.INFORMATION_MESSAGE);
-            printPorts();
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "No ports found\n",
-                    "New detected ports", JOptionPane.INFORMATION_MESSAGE);
-        }
 
+            @Override
+            protected void done() {
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                try {
+                    SerialPort[] newPorts = get();
+                    if (newPorts != null) {
+                        String newPortsText = "";
+                        for (int i = 0; i < newPorts.length; i++) {
+                            newPortsText += newPorts[i].getSystemPortName() + "\n";
+                        }
+                        JOptionPane.showMessageDialog(ShowAllPorts.getFrames()[0],
+                                "New Ports:\n\n" + newPortsText + "\n",
+                                "New detected ports", JOptionPane.INFORMATION_MESSAGE);
+                        printPorts();
+                    } else {
+                        JOptionPane.showMessageDialog(ShowAllPorts.getFrames()[0],
+                                "No ports found\n",
+                                "New detected ports", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ShowAllPorts.class.getName()).log(Level.SEVERE, "New Port", ex);
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ShowAllPorts.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 
+        }.execute();
     }//GEN-LAST:event_btn_newportsActionPerformed
 
     private void textareaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_textareaMouseClicked
@@ -417,40 +426,25 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         System.getProperties().put("apple.laf.useScreenMenuBar", "true");
 
-        /* Set the System look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Windows".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(ShowAllPorts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(ShowAllPorts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(ShowAllPorts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(ShowAllPorts.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-        // Look and Feel
-        // Versuche zuerst GTK-L&F, dann System-L&F
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e1) {
+        //<editor-fold defaultstate="collapsed" desc="Look and Feel">
+        // Try GTK-LaF on GNU/Linux first, then System-LaF. System-LaF on all other platforms
+        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+            try {
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            } catch (Exception e1) {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (Exception e2) {
+                    System.err.println("Look & Feel Error\n" + e2.getMessage());
+                }
+            }
+        } else {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception e2) {
                 System.err.println("Look & Feel Error\n" + e2.getMessage());
             }
         }
-
         //</editor-fold>
 
         /* Create and display the form */
