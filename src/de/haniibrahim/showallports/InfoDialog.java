@@ -32,7 +32,7 @@ public class InfoDialog extends javax.swing.JDialog {
         this.getRootPane().setDefaultButton(btn_ok);
         
         // Set version in Infobox
-        lb_version.setText("2.0.0-alpha");
+        lb_version.setText("2.0.0");
     }
 
     /**
@@ -71,7 +71,7 @@ public class InfoDialog extends javax.swing.JDialog {
 
         lb_subtitle.setText("Lists all serial ports available on this machine");
 
-        lb_copyright.setText(" © 2013 by Hani Ibrahim · Apache License 2.0");
+        lb_copyright.setText(" © 2013 by Hani Ibrahim · GNU Public License 3.0");
 
         lb_email.setText("<html><font color=blue><u>hani.ibrahim@gmx.de</u></font></html>");
         lb_email.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -95,12 +95,12 @@ public class InfoDialog extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btn_ok, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
                         .addComponent(lb_img)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -110,7 +110,7 @@ public class InfoDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lb_version, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(lb_subtitle))
-                        .addGap(0, 31, Short.MAX_VALUE)))
+                        .addGap(0, 16, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(132, 132, 132)

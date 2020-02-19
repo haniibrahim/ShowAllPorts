@@ -43,6 +43,9 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="btn_clear">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/de/haniibrahim/showallports/icons/clear.png"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="  Clear  "/>
             <Property name="toolTipText" type="java.lang.String" value="Clear Screen"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -55,6 +58,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="btn_refresh">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/de/haniibrahim/showallports/icons/reload.png"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Refresh"/>
             <Property name="toolTipText" type="java.lang.String" value="Rescan Ports"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -69,6 +75,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="btn_newports">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/de/haniibrahim/showallports/icons/unknown.png"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="New Ports"/>
             <Property name="toolTipText" type="java.lang.String" value="Find new serial ports"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -98,6 +107,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="btn_info">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/de/haniibrahim/showallports/icons/info.png"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="  Info  "/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>

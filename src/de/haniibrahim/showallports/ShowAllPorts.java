@@ -20,7 +20,7 @@ import javax.swing.UIManager;
  * ShowAllPorts: Shows all serial (RS-232) ports\navailable on this machine
  *
  * @author Hani Andreas Ibrahim
- * @version 2.0
+ * @version 2.0.0
  *
  */
 public class ShowAllPorts extends javax.swing.JFrame {
@@ -88,6 +88,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         tb_toolbar.setFloatable(false);
         tb_toolbar.setRollover(true);
 
+        btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/icons/clear.png"))); // NOI18N
         btn_clear.setText("  Clear  ");
         btn_clear.setToolTipText("Clear Screen");
         btn_clear.setFocusable(false);
@@ -100,6 +101,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         });
         tb_toolbar.add(btn_clear);
 
+        btn_refresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/icons/reload.png"))); // NOI18N
         btn_refresh.setText("Refresh");
         btn_refresh.setToolTipText("Rescan Ports");
         btn_refresh.setFocusable(false);
@@ -113,6 +115,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         tb_toolbar.add(btn_refresh);
         tb_toolbar.add(sep_1);
 
+        btn_newports.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/icons/unknown.png"))); // NOI18N
         btn_newports.setText("New Ports");
         btn_newports.setToolTipText("Find new serial ports");
         btn_newports.setFocusable(false);
@@ -134,6 +137,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         tb_toolbar.add(cb_checkports);
         tb_toolbar.add(sep_3);
 
+        btn_info.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/icons/info.png"))); // NOI18N
         btn_info.setText("  Info  ");
         btn_info.setFocusable(false);
         btn_info.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
