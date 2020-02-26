@@ -17,3 +17,5 @@
 /build/classes/de/hani_ibrahim/showallports/interface.zip
 /dist/
 *.class
+/build/
+build (1)/
