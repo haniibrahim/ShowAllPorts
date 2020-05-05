@@ -41,7 +41,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         if (getOS().equals("mac")) {
             sep_3.setVisible(false);
             btn_info.setVisible(false);
-            cb_checkports.setVisible(false); // Because JSerialComm has a problem w/ closePorts on macOS
+//            cb_checkports.setVisible(false); // Because JSerialComm has a problem w/ closePorts on macOS
         }
 
         setPrefs();

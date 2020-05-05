@@ -19,3 +19,6 @@
 *.class
 /build/
 build (1)/
+*.jar
+*(1).*
+
