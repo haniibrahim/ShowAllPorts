@@ -4,6 +4,7 @@ ShowAllPorts
 Lists all serial ports. Works with buit-in ports as well as USB-to-RS-232 adapters and virtual ports.
 
 ![image](http://blog.hani-ibrahim.de/wp-content/uploads/showallports_win10.png)
+
 ShowAllPorts 2.0.0 on Windows 10
 
 Features
@@ -53,7 +54,7 @@ Changelog
   * Icons in Toolbox
   * Solaris support (x86, x86_64, SPARC8_32, SPARC9_64) reimplemented
   * Installer for GNU/Linux and Windows, app-bundle for macOS
-  * Disabled "check port" function (port available or not) for macOS because of serious problems of the JSerialComm library with the Prolific driver
+  * ~~Disabled "check port" function (port available or not) for macOS because of serious problems of the JSerialComm library with the Prolific driver~~
 
 Acknowledgment
 --------------
