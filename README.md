@@ -20,11 +20,13 @@ Requirements
 ------------
 for the current version:
 
-  * Windows 7 or higher (x86, x86_64) or
+  * Windows 7* or higher (x86, x86_64) or
   * GNU/Linux (x86, x86_64, ARMv6 soft and hard float, ARMv7, ARMv8_32, ARMv8_64) or
   * Solaris (x86, x86_64, SPARC8+_32, SPARC9_64) or
   * Mac OS X 10.4 or higher (x86_64) and
   * Java 6 JRE or higher on platforms mentioned above
+
+*Windows XP support with ShowAllPorts v1.1.0 or lower
 
 Changelog
 ---------
