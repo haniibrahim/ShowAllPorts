@@ -10,11 +10,12 @@ ShowAllPorts 2.0.0 on Windows 10
 Features
 --------
 
-  * Cross-platform: Windows, Mac (Intel), GNU/Linux (Intel, ARM), Solaris (Intel, SPARC). 32- and 64-bit architectures.
+  * Cross-platform: Windows, Mac (Intel, ARM M1), GNU/Linux (Intel, ARM), Solaris (Intel, SPARC). 32- and 64-bit architectures.
   * GUI
   * Shows system port names (e.g. "COM1", "ttyS4") and additionally descriptive port names (e.g. "Physical Port S4", "Prolific USB-to-Serial Comm Port")
   * Shows whether ports are busy (except macOS)
   * Function which shows the last port(s) you connected to the machine. Useful if there are a lot of ports already installed. (Bluetooth, etc), especially under Windows.
+  * ***NEW*** Apple M1 support
   
 Requirements
 ------------
@@ -23,7 +24,7 @@ for the current version:
   * Windows 7* or higher (x86, x86_64) or
   * GNU/Linux (x86, x86_64, ARMv6 soft and hard float, ARMv7, ARMv8_32, ARMv8_64) or
   * Solaris (x86, x86_64, SPARC8+_32, SPARC9_64) or
-  * Mac OS X 10.4 or higher (x86_64) and
+  * Mac OS X 10.4 or higher (x86_64, ARM M1) and
   * Java 6 JRE or higher on platforms mentioned above
 
 *Windows XP support with ShowAllPorts v1.1.0 or lower
@@ -57,6 +58,7 @@ Changelog
   * Solaris support (x86, x86_64, SPARC8_32, SPARC9_64) reimplemented
   * Installer for GNU/Linux and Windows, app-bundle for macOS
   * ~~Disabled "check port" function (port available or not) for macOS because of serious problems of the JSerialComm library with the Prolific driver~~
+  * Apple M1 ARM support (v2.0.0b)
 
 Acknowledgment
 --------------
