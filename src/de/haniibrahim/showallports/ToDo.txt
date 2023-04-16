@@ -1,0 +1,25 @@
+Version 3.0.0
+[X] Switch to Java 8
+[X] Dark- and Lighttheme compatible icons
+[X] New app icon
+[X] Remove warning regarding combobox
+[X] Add FlatLaF
+[X] Fix com.apple.eawt.* problem with Java > 8
+[ ] Fix error messages while marking text
+[ ] Ausgabe in Tabelle
+[X] Remove terminal output of serial ports from GUI
+[X] Change version number
+[ ] Update README.md
+[ ] Installer for Windows
+[ ] Installer for macOS
+[ ] Installer for Linux
+
+Version 3.1.0
+[ ] CLI-Interface
+[ ] Update reminder
+
+Version 3.2.0
+[ ] Switch to Java 11 or 17
+[ ] Switch to Maven2 or Gradle
+[ ] Transition from com.apple.eawt.* to new Java 11 classes
+[ } Remove warnings regarding transmission from Java 8 to 11

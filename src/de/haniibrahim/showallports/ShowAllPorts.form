@@ -105,6 +105,21 @@
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="sep_3">
         </Component>
+        <Component class="javax.swing.JButton" name="btn_preferences">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/de/haniibrahim/showallports/icons/options.png"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Preferences"/>
+            <Property name="toolTipText" type="java.lang.String" value="Change settings"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_preferencesActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JButton" name="btn_info">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
@@ -139,9 +154,9 @@
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
           </Properties>
-          <Events>
-            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="textareaMouseClicked"/>
-          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ShowAllPorts_textarea"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

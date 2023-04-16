@@ -32,7 +32,7 @@ public class InfoDialog extends javax.swing.JDialog {
         this.getRootPane().setDefaultButton(btn_ok);
         
         // Set version in Infobox
-        lb_version.setText("2.0.0b");
+        lb_version.setText("3.0.0");
     }
 
     /**
@@ -57,7 +57,7 @@ public class InfoDialog extends javax.swing.JDialog {
         setModal(true);
         setResizable(false);
 
-        lb_img.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/interface.png"))); // NOI18N
+        lb_img.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/showallports_small.png"))); // NOI18N
 
         btn_ok.setText("OK");
         btn_ok.addActionListener(new java.awt.event.ActionListener() {
@@ -110,7 +110,7 @@ public class InfoDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lb_version, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(lb_subtitle))
-                        .addGap(0, 16, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(132, 132, 132)

@@ -20,7 +20,7 @@ import javax.swing.UIManager;
  * ShowAllPorts: Shows all serial (RS-232) ports\navailable on this machine
  *
  * @author Hani Andreas Ibrahim
- * @version 2.0.0b
+ * @version 3.0.0
  *
  */
 public class ShowAllPorts extends javax.swing.JFrame {
@@ -33,15 +33,15 @@ public class ShowAllPorts extends javax.swing.JFrame {
      */
     public ShowAllPorts() {
         // Programm Icon setzen
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("interface.png")));
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("showallports.png")));
         initComponents();
         textarea.addMouseListener(new ContextMenuMouseListener());
 
-        // Hide Info-button and last seperator for Mac users
-        if (getOS().equals("mac")) {
+        // Hide Info-/Preference button and last seperator for Mac users
+        if (Helper.getOS().equals("mac") & Helper.getJavaVersion() <= 8) {
             sep_3.setVisible(false);
             btn_info.setVisible(false);
-//            cb_checkports.setVisible(false); // Because JSerialComm has a problem w/ closePorts on macOS
+            btn_preferences.setVisible(false);
         }
 
         setPrefs();
@@ -77,6 +77,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         sep_2 = new javax.swing.JToolBar.Separator();
         cb_checkports = new javax.swing.JCheckBox();
         sep_3 = new javax.swing.JToolBar.Separator();
+        btn_preferences = new javax.swing.JButton();
         btn_info = new javax.swing.JButton();
         scrollpane_text = new javax.swing.JScrollPane();
         textarea = new javax.swing.JTextArea();
@@ -138,6 +139,19 @@ public class ShowAllPorts extends javax.swing.JFrame {
         tb_toolbar.add(cb_checkports);
         tb_toolbar.add(sep_3);
 
+        btn_preferences.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/icons/options.png"))); // NOI18N
+        btn_preferences.setText("Preferences");
+        btn_preferences.setToolTipText("Change settings");
+        btn_preferences.setFocusable(false);
+        btn_preferences.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btn_preferences.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btn_preferences.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_preferencesActionPerformed(evt);
+            }
+        });
+        tb_toolbar.add(btn_preferences);
+
         btn_info.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/icons/info.png"))); // NOI18N
         btn_info.setText("  Info  ");
         btn_info.setFocusable(false);
@@ -155,11 +169,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
         textarea.setEditable(false);
         textarea.setColumns(20);
         textarea.setRows(5);
-        textarea.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                textareaMouseClicked(evt);
-            }
-        });
         scrollpane_text.setViewportView(textarea);
 
         getContentPane().add(scrollpane_text, java.awt.BorderLayout.CENTER);
@@ -216,12 +225,12 @@ public class ShowAllPorts extends javax.swing.JFrame {
                         String noPorts = "No ports found\n";
                         textarea.setText(noPorts);
                         // Output CLI
-                        System.out.print(noPorts);
+//                        System.out.print(noPorts);
                     } else {
                         textarea.setText("");
                         for (int i = 0; i < numOfPorts; i++) {
                             textarea.append(ports[i] + System.getProperty("line.separator")); // Output GUI
-                            System.out.print(ports[i] + System.getProperty("line.separator")); // Output CLI
+//                            System.out.print(ports[i] + System.getProperty("line.separator")); // Output CLI
                         }
                     }
                 } catch (InterruptedException ex) {
@@ -255,7 +264,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         int allPortsLen;  // Length of the array of allPorts
         int confirmResult; // Result of JOptionPanels
 
-        icon = new ImageIcon(ShowAllPorts.class.getResource("interface.png"));
+        icon = new ImageIcon(ShowAllPorts.class.getResource("showallports_small.png"));
 
         confirmResult = JOptionPane.showOptionDialog(this,
                 "If USB-to-Serial adapters are plugged-in,\npull them out now and press OK",
@@ -266,7 +275,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
             JOptionPane.showMessageDialog(this,
                     "Process canncelled by user",
-                    "Info", JOptionPane.INFORMATION_MESSAGE);
+                    "Info", JOptionPane.WARNING_MESSAGE);
             return newPorts = null;
         }
 
@@ -284,7 +293,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         if (confirmResult == JOptionPane.CANCEL_OPTION || confirmResult == JOptionPane.CLOSED_OPTION) {
             JOptionPane.showMessageDialog(this,
                     "Process canncelled by user",
-                    "Info", JOptionPane.INFORMATION_MESSAGE);
+                    "Info", JOptionPane.WARNING_MESSAGE);
             return newPorts = null;
         }
 
@@ -320,6 +329,9 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         // App settings
         prefs.putBoolean("checkports", cb_checkports.isSelected());
+        
+        // Save current LaF
+        prefs.put("laf", LafHelper.getCurrentLafClassName());
 
         prefs.flush(); // Made sure that all preferences are stored
     }
@@ -327,6 +339,19 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private void setPrefs() {
         // Get node
         prefs = Preferences.userNodeForPackage(getClass());
+        
+                
+        // L&F
+        String laf = prefs.get("laf", getMyLookAndFeel());
+        try {
+            // Set Look and Feel
+            UIManager.setLookAndFeel(laf);
+            SwingUtilities.updateComponentTreeUI(this);
+            ShowAllPorts.getFrames()[0].pack();
+        } catch (Exception ex) {
+            System.err.println("LOOK AND FEEL ERROR: " + ex.getMessage());
+            Logger.getLogger(ShowAllPorts.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         // Calculate screen-centered windows position
         final Dimension d = this.getToolkit().getScreenSize();
@@ -396,7 +421,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
                     } else {
                         JOptionPane.showMessageDialog(ShowAllPorts.getFrames()[0],
                                 "No ports found\n",
-                                "New detected ports", JOptionPane.INFORMATION_MESSAGE);
+                                "New detected ports", JOptionPane.PLAIN_MESSAGE);
                     }
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ShowAllPorts.class.getName()).log(Level.SEVERE, "New Port", ex);
@@ -408,20 +433,26 @@ public class ShowAllPorts extends javax.swing.JFrame {
         }.execute();
     }//GEN-LAST:event_btn_newportsActionPerformed
 
-    private void textareaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_textareaMouseClicked
-        //textarea.addMouseListener(new ContextMenuMouseListener());
-
-    }//GEN-LAST:event_textareaMouseClicked
-
-    public static String getOS() {
-        String osname = System.getProperty("os.name");
-        if (osname != null && osname.toLowerCase().contains("mac")) {
-            return "mac";
+    private void btn_preferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_preferencesActionPerformed
+        Options optionsDialog = new Options(this, true);
+        optionsDialog.setLocationRelativeTo(this);
+        optionsDialog.setVisible(true);
+    }//GEN-LAST:event_btn_preferencesActionPerformed
+    
+     /**
+     * Initial Look and Feel. Try GTK-LaF on GNU/Linux first, then System-LaF.
+     * System-LaF on all other platforms
+     *
+     * @return Look and Feel class name
+     */
+    private static String getMyLookAndFeel() {
+        String laf;
+        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+            laf = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+        } else {
+            laf = UIManager.getSystemLookAndFeelClassName();
         }
-        if (osname != null && osname.toLowerCase().contains("windows")) {
-            return "win";
-        }
-        return "noarch";
+        return laf;
     }
 
     /**
@@ -429,27 +460,36 @@ public class ShowAllPorts extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
 
-        System.getProperties().put("apple.laf.useScreenMenuBar", "true");
-
+        System.getProperties().put("apple.laf.useScreenMenuBar", "true"); // Mac: Menuebar on top screen
+        System.setProperty("apple.awt.application.appearance", "system"); // Mac: Dark title bar if selected by system
+        
         //<editor-fold defaultstate="collapsed" desc="Look and Feel">
+        // Flat LaF 3 install
+        UIManager.installLookAndFeel("FlatLaf Light", "com.formdev.flatlaf.FlatLightLaf");
+        UIManager.installLookAndFeel("FlatLaf Dark", "com.formdev.flatlaf.FlatDarkLaf");
+        UIManager.installLookAndFeel("FlatLaf IntelliJ", "com.formdev.flatlaf.FlatIntelliJLaf");
+        UIManager.installLookAndFeel("FlatLaf Darcula", "com.formdev.flatlaf.FlatDarculaLaf");
+        UIManager.installLookAndFeel("FlatLaf macOS Light", "com.formdev.flatlaf.themes.FlatMacLightLaf");
+        UIManager.installLookAndFeel("FlatLaf macOS Dark", "com.formdev.flatlaf.themes.FlatMacDarkLaf");
+        
         // Try GTK-LaF on GNU/Linux first, then System-LaF. System-LaF on all other platforms
-        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
-            try {
-                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            } catch (Exception e1) {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (Exception e2) {
-                    System.err.println("Look & Feel Error\n" + e2.getMessage());
-                }
-            }
-        } else {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e2) {
-                System.err.println("Look & Feel Error\n" + e2.getMessage());
-            }
-        }
+//        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+//            try {
+//                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+//            } catch (Exception e1) {
+//                try {
+//                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//                } catch (Exception e2) {
+//                    System.err.println("Look & Feel Error\n" + e2.getMessage());
+//                }
+//            }
+//        } else {
+//            try {
+//                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            } catch (Exception e2) {
+//                System.err.println("Look & Feel Error\n" + e2.getMessage());
+//            }
+//        }
         //</editor-fold>
 
         /* Create and display the form */
@@ -458,8 +498,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
             public void run() {
                 ShowAllPorts prg = new ShowAllPorts();
                 prg.setVisible(true);
-                if (getOS().equals("mac")) {
-                    MacImpl macImpl = new MacImpl();
+                if (Helper.getOS().equals("mac") & Helper.getJavaVersion() <= 8) {
+                    new MacImpl();
                 }
             }
         });
@@ -469,6 +509,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private javax.swing.JButton btn_clear;
     private javax.swing.JButton btn_info;
     private javax.swing.JButton btn_newports;
+    private javax.swing.JButton btn_preferences;
     private javax.swing.JButton btn_refresh;
     private javax.swing.JCheckBox cb_checkports;
     private javax.swing.JScrollPane scrollpane_text;

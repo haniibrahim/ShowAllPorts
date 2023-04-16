@@ -14,7 +14,7 @@ import javax.swing.ImageIcon;
  *
  * @author Hani Ibrahim
  */
-class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHandler {
+final class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHandler {
 
     Application application;
 
@@ -29,14 +29,14 @@ class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHa
             application = Application.getApplication();
             application.setAboutHandler(this);
             // PreferenceHandler not used yet
-            // application.setPreferencesHandler(this); 
+            application.setPreferencesHandler(this); 
         } catch (Throwable e) {
             System.err.println("setupMacOSXApplicationListener failed: "
                     + e.getMessage());
         }
 
         // Set dock icon
-        application.setDockIconImage(new ImageIcon(getClass().getResource("interface.png")).getImage());
+        application.setDockIconImage(new ImageIcon(getClass().getResource("showallports.png")).getImage());
 
     }
 
@@ -52,8 +52,9 @@ class MacImpl implements ClassSelector, AboutHandler, PreferencesHandler, QuitHa
     // not used yet
     @Override
     public void handlePreferences(PreferencesEvent arg0) {
-        // new OptionsDialog(); 
-        //System.out.println("handlePreferences()"); 
+        Options optionsDialog = new Options(ShowAllPorts.getFrames()[0],true);
+        optionsDialog.setLocationRelativeTo(null);
+        optionsDialog.setVisible(true);
     }
 
     @Override
