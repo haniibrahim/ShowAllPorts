@@ -35,7 +35,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
         // Programm Icon setzen
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("showallports.png")));
         initComponents();
-        textarea.addMouseListener(new ContextMenuMouseListener());
 
         // Hide Info-/Preference button and last seperator for Mac users
         if (Helper.getOS().equals("mac") & Helper.getJavaVersion() <= 8) {
@@ -57,7 +56,10 @@ public class ShowAllPorts extends javax.swing.JFrame {
             }
         }));
 
-        printPorts();
+//        textarea.addMouseListener(new ContextMenuMouseListener());
+//        DefaultContextMenu.addDefaultContextMenu(textarea);
+
+//        printPorts();
     }
 
     /**
@@ -79,15 +81,14 @@ public class ShowAllPorts extends javax.swing.JFrame {
         sep_3 = new javax.swing.JToolBar.Separator();
         btn_preferences = new javax.swing.JButton();
         btn_info = new javax.swing.JButton();
-        scrollpane_text = new javax.swing.JScrollPane();
-        textarea = new javax.swing.JTextArea();
+        sp_table = new javax.swing.JScrollPane();
+        tl_serial = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ShowAllPorts");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setLocationByPlatform(true);
 
-        tb_toolbar.setFloatable(false);
         tb_toolbar.setRollover(true);
 
         btn_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/haniibrahim/showallports/icons/clear.png"))); // NOI18N
@@ -166,12 +167,20 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         getContentPane().add(tb_toolbar, java.awt.BorderLayout.PAGE_START);
 
-        textarea.setEditable(false);
-        textarea.setColumns(20);
-        textarea.setRows(5);
-        scrollpane_text.setViewportView(textarea);
+        tl_serial.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        sp_table.setViewportView(tl_serial);
 
-        getContentPane().add(scrollpane_text, java.awt.BorderLayout.CENTER);
+        getContentPane().add(sp_table, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -182,7 +191,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private void printPorts() {
 
         // Disable all neccesary items while searching for ports 
-        textarea.setText("Searching ports ...");
+//        textarea.setText("Searching ports ...");
         btn_clear.setEnabled(false);
         btn_refresh.setEnabled(false);
         btn_info.setEnabled(false);
@@ -219,20 +228,20 @@ public class ShowAllPorts extends javax.swing.JFrame {
             protected void done() {
                 try {
                     String[] ports = get();
-                    if (ports.length == 0) {
-                        // Output GUI
-                        textarea.setText("");
-                        String noPorts = "No ports found\n";
-                        textarea.setText(noPorts);
-                        // Output CLI
-//                        System.out.print(noPorts);
-                    } else {
-                        textarea.setText("");
-                        for (int i = 0; i < numOfPorts; i++) {
-                            textarea.append(ports[i] + System.getProperty("line.separator")); // Output GUI
-//                            System.out.print(ports[i] + System.getProperty("line.separator")); // Output CLI
-                        }
-                    }
+//                    if (ports.length == 0) {
+//                        // Output GUI
+//                        textarea.setText("");
+//                        String noPorts = "No ports found\n";
+//                        textarea.setText(noPorts);
+//                        // Output CLI
+////                        System.out.print(noPorts);
+//                    } else {
+//                        textarea.setText("");
+//                        for (int i = 0; i < numOfPorts; i++) {
+//                            textarea.append(ports[i] + System.getProperty("line.separator")); // Output GUI
+////                            System.out.print(ports[i] + System.getProperty("line.separator")); // Output CLI
+//                        }
+//                    }
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ShowAllPorts.class.getName()).log(Level.SEVERE, "GET: Interrupted", ex);
                 } catch (ExecutionException ex) {
@@ -329,7 +338,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         // App settings
         prefs.putBoolean("checkports", cb_checkports.isSelected());
-        
+
         // Save current LaF
         prefs.put("laf", LafHelper.getCurrentLafClassName());
 
@@ -339,8 +348,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private void setPrefs() {
         // Get node
         prefs = Preferences.userNodeForPackage(getClass());
-        
-                
+
         // L&F
         String laf = prefs.get("laf", getMyLookAndFeel());
         try {
@@ -376,7 +384,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
-        textarea.setText("");
+//        textarea.setText("");
     }//GEN-LAST:event_btn_clearActionPerformed
 
     private void btn_infoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_infoActionPerformed
@@ -438,8 +446,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
         optionsDialog.setLocationRelativeTo(this);
         optionsDialog.setVisible(true);
     }//GEN-LAST:event_btn_preferencesActionPerformed
-    
-     /**
+
+    /**
      * Initial Look and Feel. Try GTK-LaF on GNU/Linux first, then System-LaF.
      * System-LaF on all other platforms
      *
@@ -462,7 +470,8 @@ public class ShowAllPorts extends javax.swing.JFrame {
 
         System.getProperties().put("apple.laf.useScreenMenuBar", "true"); // Mac: Menuebar on top screen
         System.setProperty("apple.awt.application.appearance", "system"); // Mac: Dark title bar if selected by system
-        
+        System.setProperty("apple.awt.textantialiasing", "true");
+
         //<editor-fold defaultstate="collapsed" desc="Look and Feel">
         // Flat LaF 3 install
         UIManager.installLookAndFeel("FlatLaf Light", "com.formdev.flatlaf.FlatLightLaf");
@@ -471,7 +480,7 @@ public class ShowAllPorts extends javax.swing.JFrame {
         UIManager.installLookAndFeel("FlatLaf Darcula", "com.formdev.flatlaf.FlatDarculaLaf");
         UIManager.installLookAndFeel("FlatLaf macOS Light", "com.formdev.flatlaf.themes.FlatMacLightLaf");
         UIManager.installLookAndFeel("FlatLaf macOS Dark", "com.formdev.flatlaf.themes.FlatMacDarkLaf");
-        
+
         // Try GTK-LaF on GNU/Linux first, then System-LaF. System-LaF on all other platforms
 //        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
 //            try {
@@ -491,16 +500,12 @@ public class ShowAllPorts extends javax.swing.JFrame {
 //            }
 //        }
         //</editor-fold>
-
         /* Create and display the form */
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ShowAllPorts prg = new ShowAllPorts();
-                prg.setVisible(true);
-                if (Helper.getOS().equals("mac") & Helper.getJavaVersion() <= 8) {
-                    new MacImpl();
-                }
+        SwingUtilities.invokeLater(() -> {
+            ShowAllPorts prg = new ShowAllPorts();
+            prg.setVisible(true);
+            if (Helper.getOS().equals("mac") & Helper.getJavaVersion() <= 8) {
+                new MacImpl();
             }
         });
     }
@@ -512,12 +517,12 @@ public class ShowAllPorts extends javax.swing.JFrame {
     private javax.swing.JButton btn_preferences;
     private javax.swing.JButton btn_refresh;
     private javax.swing.JCheckBox cb_checkports;
-    private javax.swing.JScrollPane scrollpane_text;
     private javax.swing.JToolBar.Separator sep_1;
     private javax.swing.JToolBar.Separator sep_2;
     private javax.swing.JToolBar.Separator sep_3;
+    private javax.swing.JScrollPane sp_table;
     private javax.swing.JToolBar tb_toolbar;
-    private javax.swing.JTextArea textarea;
+    private javax.swing.JTable tl_serial;
     // End of variables declaration//GEN-END:variables
 //</editor-fold>
 }

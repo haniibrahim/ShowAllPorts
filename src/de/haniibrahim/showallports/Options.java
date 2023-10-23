@@ -192,13 +192,7 @@ public class Options extends javax.swing.JDialog {
             UIManager.setLookAndFeel(lafs[x].getClassName());
             SwingUtilities.updateComponentTreeUI(ShowAllPorts.getFrames()[0]);
 //            ShowAllPorts.getFrames()[0].pack();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Options.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            Logger.getLogger(Options.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(Options.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             Logger.getLogger(Options.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.dispose();
