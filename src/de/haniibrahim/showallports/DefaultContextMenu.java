@@ -39,13 +39,13 @@ public class DefaultContextMenu extends JPopupMenu
     {
         undo = new JMenuItem("Undo");
         undo.setEnabled(false);
-        undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         undo.addActionListener(event -> undoManager.undo());
         add(undo);
 
         redo = new JMenuItem("Redo");
         redo.setEnabled(false);
-        redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         redo.addActionListener(event -> undoManager.redo());
         add(redo);
 
@@ -53,25 +53,25 @@ public class DefaultContextMenu extends JPopupMenu
 
         cut = new JMenuItem("Cut");
         cut.setEnabled(false);
-        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         cut.addActionListener(event -> textComponent.cut());
         add(cut);
 
         copy = new JMenuItem("Copy");
         copy.setEnabled(false);
-        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         copy.addActionListener(event -> textComponent.copy());
         add(copy);
 
         paste = new JMenuItem("Paste");
         paste.setEnabled(false);
-        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         paste.addActionListener(event -> textComponent.paste());
         add(paste);
 
         delete = new JMenuItem("Delete");
         delete.setEnabled(false);
-        delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         delete.addActionListener(event -> textComponent.replaceSelection(""));
         add(delete);
 
@@ -79,7 +79,7 @@ public class DefaultContextMenu extends JPopupMenu
 
         selectAll = new JMenuItem("Select All");
         selectAll.setEnabled(false);
-        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         selectAll.addActionListener(event -> textComponent.selectAll());
         add(selectAll);
     }
@@ -92,7 +92,7 @@ public class DefaultContextMenu extends JPopupMenu
             public void keyPressed(KeyEvent pressedEvent)
             {
                 if ((pressedEvent.getKeyCode() == KeyEvent.VK_Z)
-                        && ((pressedEvent.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) != 0))
+                        && ((pressedEvent.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) != 0))
                 {
                     if (undoManager.canUndo())
                     {
@@ -101,7 +101,7 @@ public class DefaultContextMenu extends JPopupMenu
                 }
 
                 if ((pressedEvent.getKeyCode() == KeyEvent.VK_Y)
-                        && ((pressedEvent.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) != 0))
+                        && ((pressedEvent.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) != 0))
                 {
                     if (undoManager.canRedo())
                     {

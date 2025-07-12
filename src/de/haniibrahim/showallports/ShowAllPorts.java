@@ -504,9 +504,6 @@ public class ShowAllPorts extends javax.swing.JFrame {
         SwingUtilities.invokeLater(() -> {
             ShowAllPorts prg = new ShowAllPorts();
             prg.setVisible(true);
-            if (Helper.getOS().equals("mac") & Helper.getJavaVersion() <= 8) {
-                new MacImpl();
-            }
         });
     }
     //<editor-fold defaultstate="collapsed" desc=" GUI variables declaration">
